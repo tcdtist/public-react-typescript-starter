@@ -1,0 +1,39 @@
+#!/bin/sh
+BRANCH=$(git symbolic-ref --short HEAD)
+
+# Skip validation cho branch staging
+if [ "$BRANCH" = "staging" ]; then
+  echo "Skipping commit message validation on staging branch."
+  exit 0
+fi
+
+# Lấy commit message dòng đầu
+FIRST_LINE=$(head -1 "$1")
+
+# Check empty
+if [ -z "$FIRST_LINE" ]; then
+  echo "❌ Commit message cannot be empty." >&2
+  exit 1
+fi
+
+# Check length (2-120 ký tự)
+LENGTH=$(echo "$FIRST_LINE" | wc -c)
+if [ "$LENGTH" -gt 120 ] || [ "$LENGTH" -lt 2 ]; then
+  echo "❌ Commit message must be 2-120 characters. Current: $LENGTH" >&2
+  exit 1
+fi
+
+# Valid types
+TYPES="feat|fix|hotfix|chore|docs|test|style|refactor|perf|build|ci|revert|beep|config|draft"
+
+# Check pattern: type(scope?): desc
+if echo "$FIRST_LINE" | grep -qE "(${TYPES})(\([^)]*\))?:[[:space:]]+.+"; then
+  echo "✅ Commit message validation passed!"
+  exit 0
+else
+  echo "❌ Invalid commit message." >&2
+  echo "👉 Format: [emoji] type(scope): short description" >&2
+  echo "📋 Types: $TYPES" >&2
+  echo "📝 Your message: '$FIRST_LINE'" >&2
+  exit 1
+fi

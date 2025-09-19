@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+set -e
+echo 'Fast commit mode.'
+npx lint-staged
+echo '✅ Fast commit passed'

@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+set -e
+
+echo "🔍 Running pre-commit checks..."
+
+# Format code
+bun run format
+git add .
+
+# ESLint strict check
+bun run lint:check || (
+  echo "❌ ESLint errors detected."
+  exit 1
+)
+
+# Prettier strict check
+bun run prettier:check || (
+  echo "❌ Prettier issues detected (should have been fixed)."
+  exit 1
+)
+
+npx lint-staged
+
+echo "✅ Pre-commit checks passed!"
