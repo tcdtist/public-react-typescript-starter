@@ -1,7 +1,9 @@
 import { createBrowserRouter } from 'react-router-dom'
 
-import { LoginForm } from '@/features/auth/components/LoginForm'
-import { SignupForm } from '@/features/auth/components/SignupForm'
+import { LoginPage } from '@/features/auth/pages/LoginPage'
+import { SignupPage } from '@/features/auth/pages/SignupPage'
+import { ChatPage } from '@/features/chat/pages/ChatPage'
+import { ProfilePage } from '@/features/profile/pages/ProfilePage'
 
 export const router = createBrowserRouter([
   {
@@ -10,32 +12,18 @@ export const router = createBrowserRouter([
   },
   {
     path: '/login',
-    element: (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="w-full max-w-md space-y-8">
-          <h2 className="text-center text-3xl font-bold">Sign In</h2>
-          <LoginForm />
-        </div>
-      </div>
-    ),
+    element: <LoginPage />,
   },
   {
     path: '/signup',
-    element: (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="w-full max-w-md space-y-8">
-          <h2 className="text-center text-3xl font-bold">Sign Up</h2>
-          <SignupForm />
-        </div>
-      </div>
-    ),
+    element: <SignupPage />,
   },
   {
     path: '/profile',
-    element: <div>Profile Page - Coming Soon!</div>,
+    element: <ProfilePage />,
   },
   {
     path: '/chat',
-    element: <div>Chat Page - Coming Soon!</div>,
+    element: <ChatPage />,
   },
 ])
