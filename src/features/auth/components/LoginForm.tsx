@@ -19,6 +19,10 @@ export const LoginForm = () => {
 
   const methods = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: 'user@tcdtist.com',
+      password: 'tcdtist@123',
+    },
   })
 
   const {
@@ -37,14 +41,14 @@ export const LoginForm = () => {
           name="email"
           label="Email"
           type="email"
-          placeholder="Enter your email"
+          placeholder="user@tcdtist.com"
           required
         />
 
         <FormItem.InputPassword
           name="password"
           label="Password"
-          placeholder="Enter your password"
+          placeholder="tcdtist@123"
           required
         />
 

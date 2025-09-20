@@ -7,7 +7,11 @@ export default {
   theme: {
     extend: {
       screens: {
-        xs: '475px',
+        // Sử dụng max-width thay vì min-width
+        mobile: { max: '639px' },
+        tablet: { max: '1023px' },
+        desktop: { max: '1279px' },
+        'large-desktop': { max: '1535px' },
       },
       colors: {
         brand: {

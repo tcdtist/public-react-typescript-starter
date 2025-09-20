@@ -31,20 +31,33 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         isAuthenticated: false,
         isLoading: false,
 
-        login: async (_email: string, _password: string) => {
+        login: async (email: string, password: string) => {
           set({ isLoading: true })
           try {
-            // TODO: Implement actual login API call
-            console.log('Login attempt:', _email, _password)
-            const mockUser: User = { id: '1', email: _email, name: 'John Doe' }
-            const mockToken = 'mock-jwt-token'
+            // Mock authentication with default credentials
+            console.log('Login attempt:', email, password)
 
-            set({
-              user: mockUser,
-              token: mockToken,
-              isAuthenticated: true,
-              isLoading: false,
-            })
+            // Default credentials: user@tcdtist.com / tcdtist@123
+            if (email === 'user@tcdtist.com' && password === 'tcdtist@123') {
+              const mockUser: User = {
+                id: '1',
+                email: email,
+                name: 'TCDTIST User',
+              }
+              const mockToken = 'mock-jwt-token-' + Date.now()
+
+              // Simulate API delay
+              await new Promise((resolve) => setTimeout(resolve, 1000))
+
+              set({
+                user: mockUser,
+                token: mockToken,
+                isAuthenticated: true,
+                isLoading: false,
+              })
+            } else {
+              throw new Error('Invalid credentials. Use user@tcdtist.com / tcdtist@123')
+            }
           } catch (error) {
             set({ isLoading: false })
             throw error
