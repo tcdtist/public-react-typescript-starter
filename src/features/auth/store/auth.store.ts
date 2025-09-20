@@ -17,6 +17,7 @@ interface AuthState {
 interface AuthActions {
   login: (_email: string, _password: string) => Promise<void>
   logout: () => void
+  updateUser: (_user: User) => void
   setUser: (_user: User) => void
   setToken: (_token: string) => void
   setLoading: (_loading: boolean) => void
@@ -71,6 +72,10 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             isAuthenticated: false,
             isLoading: false,
           })
+        },
+
+        updateUser: (_user: User) => {
+          set({ user: _user, isAuthenticated: !!_user })
         },
 
         setUser: (_user: User) => {

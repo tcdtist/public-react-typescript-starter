@@ -1,7 +1,13 @@
+import { useState } from 'react'
+
 import { motion } from 'framer-motion'
 import { FiCalendar, FiEdit, FiMail, FiSettings, FiUser } from 'react-icons/fi'
 
 import { useAuthStore } from '@/features/auth/store/auth.store'
+import { MessageHistoryModal } from '@/features/chat/components/MessageHistoryModal'
+import { CreatePostModal } from '@/features/posts/components/CreatePostModal'
+import { AccountSettingsModal } from '@/features/profile/components/AccountSettingsModal'
+import { EditProfileModal } from '@/features/profile/components/EditProfileModal'
 import { Container } from '@/shared/components/layout/Container'
 import { Layout } from '@/shared/components/layout/Layout'
 import { Badge } from '@/shared/components/ui/Badge'
@@ -28,9 +34,10 @@ interface ProfileStat {
 
 interface ProfileHeaderProps {
   user: User
+  onEditClick: () => void
 }
 
-function ProfileHeader({ user }: ProfileHeaderProps) {
+function ProfileHeader({ user, onEditClick }: ProfileHeaderProps) {
   return (
     <Card className="mb-8">
       <CardHeader className="pb-6">
@@ -58,7 +65,7 @@ function ProfileHeader({ user }: ProfileHeaderProps) {
           </div>
 
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button variant="outline">
+            <Button variant="outline" onClick={onEditClick}>
               <FiSettings className="mr-2 h-4 w-4" />
               Edit Profile
             </Button>
@@ -170,11 +177,21 @@ function ActivityStats({ stats }: ActivityStatsProps) {
   )
 }
 
-function QuickActions() {
+interface QuickActionsProps {
+  onCreatePostClick: () => void
+  onAccountSettingsClick: () => void
+  onMessageHistoryClick: () => void
+}
+
+function QuickActions({
+  onCreatePostClick,
+  onAccountSettingsClick,
+  onMessageHistoryClick,
+}: QuickActionsProps) {
   const quickActions = [
-    { label: 'Create New Post', icon: FiEdit },
-    { label: 'Account Settings', icon: FiSettings },
-    { label: 'Message History', icon: FiMail },
+    { label: 'Create New Post', icon: FiEdit, onClick: onCreatePostClick },
+    { label: 'Account Settings', icon: FiSettings, onClick: onAccountSettingsClick },
+    { label: 'Message History', icon: FiMail, onClick: onMessageHistoryClick },
   ]
 
   return (
@@ -186,10 +203,12 @@ function QuickActions() {
         {quickActions.map((action) => {
           const Icon = action.icon
           return (
-            <Button key={action.label} variant="outline" className="w-full justify-start">
-              <Icon className="mr-2 h-4 w-4" />
-              {action.label}
-            </Button>
+            <motion.div key={action.label} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button variant="outline" className="w-full justify-start" onClick={action.onClick}>
+                <Icon className="mr-2 h-4 w-4" />
+                {action.label}
+              </Button>
+            </motion.div>
           )
         })}
       </CardContent>
@@ -199,19 +218,35 @@ function QuickActions() {
 
 interface SidebarProps {
   stats: ProfileStat[]
+  onCreatePostClick: () => void
+  onAccountSettingsClick: () => void
+  onMessageHistoryClick: () => void
 }
 
-function Sidebar({ stats }: SidebarProps) {
+function Sidebar({
+  stats,
+  onCreatePostClick,
+  onAccountSettingsClick,
+  onMessageHistoryClick,
+}: SidebarProps) {
   return (
     <div>
       <ActivityStats stats={stats} />
-      <QuickActions />
+      <QuickActions
+        onCreatePostClick={onCreatePostClick}
+        onAccountSettingsClick={onAccountSettingsClick}
+        onMessageHistoryClick={onMessageHistoryClick}
+      />
     </div>
   )
 }
 
 export const ProfilePage = () => {
   const { user } = useAuthStore()
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false)
+  const [isCreatePostOpen, setIsCreatePostOpen] = useState(false)
+  const [isAccountSettingsOpen, setIsAccountSettingsOpen] = useState(false)
+  const [isMessageHistoryOpen, setIsMessageHistoryOpen] = useState(false)
 
   if (!user) {
     return null
@@ -223,6 +258,11 @@ export const ProfilePage = () => {
     { label: 'Days Active', value: '89', icon: FiCalendar },
   ]
 
+  const handleEditProfileClick = () => setIsEditProfileOpen(true)
+  const handleCreatePostClick = () => setIsCreatePostOpen(true)
+  const handleAccountSettingsClick = () => setIsAccountSettingsOpen(true)
+  const handleMessageHistoryClick = () => setIsMessageHistoryOpen(true)
+
   return (
     <Layout>
       <Container className="py-8 sm:py-12">
@@ -232,13 +272,29 @@ export const ProfilePage = () => {
           transition={{ duration: 0.6 }}
           className="mx-auto max-w-4xl"
         >
-          <ProfileHeader user={user} />
+          <ProfileHeader user={user} onEditClick={handleEditProfileClick} />
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <ProfileInformation user={user} />
-            <Sidebar stats={profileStats} />
+            <Sidebar
+              stats={profileStats}
+              onCreatePostClick={handleCreatePostClick}
+              onAccountSettingsClick={handleAccountSettingsClick}
+              onMessageHistoryClick={handleMessageHistoryClick}
+            />
           </div>
         </motion.div>
       </Container>
+
+      <EditProfileModal isOpen={isEditProfileOpen} onClose={() => setIsEditProfileOpen(false)} />
+      <CreatePostModal isOpen={isCreatePostOpen} onClose={() => setIsCreatePostOpen(false)} />
+      <AccountSettingsModal
+        isOpen={isAccountSettingsOpen}
+        onClose={() => setIsAccountSettingsOpen(false)}
+      />
+      <MessageHistoryModal
+        isOpen={isMessageHistoryOpen}
+        onClose={() => setIsMessageHistoryOpen(false)}
+      />
     </Layout>
   )
 }
